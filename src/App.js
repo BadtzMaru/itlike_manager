@@ -1,26 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {connect} from 'react-redux';
+import {HashRouter, Switch, Route} from 'react-router-dom';
+import {Button} from 'antd';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Login from "./pages/login/login";
+import Admin from "./pages/admin/admin";
+
+class App extends React.Component {
+    render() {
+        return (
+            <div>
+                hello
+                <Button type="primary">测试按钮</Button>
+            </div>
+        );
+    }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+    return {}
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {}
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
