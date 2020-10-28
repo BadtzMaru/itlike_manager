@@ -1,48 +1,48 @@
 .login {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-color: #16222e;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: #16222e;
 }
 
 .login .login-wrap {
-    width: 500px;
-    height: 340px;
-    padding-top: 85px;
-    margin: 180px auto;
-    background-color: #FFF;
-    position: relative;
+	width: 500px;
+	height: 340px;
+	padding-top: 85px;
+	margin: 180px auto;
+	background-color: #fff;
+	position: relative;
 }
 
 .login .login-wrap .avatar {
-    position: absolute;
-    left: 50%;
-    top: -60px;
-    transform: translateX(-50%);
-    width: 140px;
-    height: 140px;
-    border: 10px solid #FFF;
-    border-radius: 50%;
-    box-shadow: 0 1px 5px #CCC;
-    background-color: #e8e8e8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	position: absolute;
+	left: 50%;
+	top: -60px;
+	transform: translateX(-50%);
+	width: 140px;
+	height: 140px;
+	border: 10px solid #fff;
+	border-radius: 50%;
+	box-shadow: 0 1px 5px #ccc;
+	background-color: #e8e8e8;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.login .login-wrap .avatar img{
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
+.login .login-wrap .avatar img {
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
 }
 
-.login .login-wrap .content{
-    padding: 20px;
-    text-align: center;
+.login .login-wrap .content {
+	padding: 20px;
+	text-align: center;
 }
 
-.login .login-wrap .content .login-form-button{
-    margin-top: 10px;
-    width: 90%;
-    height: 40px;
+.login .login-wrap .content .login-form-button {
+	margin-top: 10px;
+	width: 90%;
+	height: 40px;
 }

@@ -8,21 +8,24 @@ export const getBuyCount = () => ajax('/api/auth/home/buy_count');
 export const getWebSiteInfo = () => ajax('/api/auth/home/info');
 // 修改网站配置信息
 export const editWebSite = (
-    token,
-    site_name,
-    site_keyword,
-    site_des,
-    site_logo,
-    site_copy,
-    site_bei,
-) => ajax('/api/auth/home/edit', {
-    token,
-    site_name,
-    site_keyword,
-    site_des,
-    site_logo,
-    site_copy,
-    site_bei,
-}, 'post');
-
-
+	token,
+	site_name,
+	site_keyword,
+	site_des,
+	site_logo,
+	site_copy,
+	site_bei
+) =>
+	ajax(
+		'/api/auth/home/edit',
+		{
+			token,
+			site_name,
+			site_keyword,
+			site_des,
+			site_logo,
+			site_copy,
+			site_bei,
+		},
+		'post'
+	);

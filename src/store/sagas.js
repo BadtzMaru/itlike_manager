@@ -1,5 +1,3 @@
-function* mySaga() {
-
-}
+function* mySaga() {}
 
 export default mySaga;

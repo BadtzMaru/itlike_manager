@@ -1,60 +1,60 @@
 [
-    {
-        "id": 1,
-        "title": "首页",
-        "_key": "/home",
-        "icon": "icon-changjingguanli",
-        "prentID": 0
-    },
-    {
-        "id": 2,
-        "title": "幼教资源管理",
-        "_key": "/resource",
-        "icon": "icon-gongnengdingyi",
-        "prentID": 0
-    },
-    {
-        "id": 3,
-        "title": "职场人生管理",
-        "_key": "/lifejob",
-        "icon": "icon-hezuohuobanmiyueguanli",
-        "prentID": 0
-    },
-    {
-        "id": 4,
-        "title": "活动专区管理",
-        "_key": "/activities",
-        "icon": "icon-yibiaopan",
-        "prentID": 0
-    },
-    {
-        "id": 5,
-        "title": "直播课堂管理",
-        "_key": "/live",
-        "icon": "icon-icon_fabu",
-        "prentID": 0
-    },
-    {
-        "id": 6,
-        "title": "设置中心",
-        "_key": "/setting",
-        "icon": "icon-icon_shezhi",
-        "prentID": 0,
-        "children": [
-            {
-                "id": 7,
-                "title": "账户设置",
-                "_key": "/setting/account",
-                "icon": "icon-fuwudiqiu",
-                "prentID": 6
-            },
-            {
-                "id": 8,
-                "title": "会员统计",
-                "_key": "/setting/member",
-                "icon": "icon-shenjing",
-                "prentID": 6
-            }
-        ]
-    }
+	{
+		"id": 1,
+		"title": "首页",
+		"_key": "/home",
+		"icon": "icon-changjingguanli",
+		"prentID": 0
+	},
+	{
+		"id": 2,
+		"title": "幼教资源管理",
+		"_key": "/resource",
+		"icon": "icon-gongnengdingyi",
+		"prentID": 0
+	},
+	{
+		"id": 3,
+		"title": "职场人生管理",
+		"_key": "/lifejob",
+		"icon": "icon-hezuohuobanmiyueguanli",
+		"prentID": 0
+	},
+	{
+		"id": 4,
+		"title": "活动专区管理",
+		"_key": "/activities",
+		"icon": "icon-yibiaopan",
+		"prentID": 0
+	},
+	{
+		"id": 5,
+		"title": "直播课堂管理",
+		"_key": "/live",
+		"icon": "icon-icon_fabu",
+		"prentID": 0
+	},
+	{
+		"id": 6,
+		"title": "设置中心",
+		"_key": "/setting",
+		"icon": "icon-icon_shezhi",
+		"prentID": 0,
+		"children": [
+			{
+				"id": 7,
+				"title": "账户设置",
+				"_key": "/setting/account",
+				"icon": "icon-fuwudiqiu",
+				"prentID": 6
+			},
+			{
+				"id": 8,
+				"title": "会员统计",
+				"_key": "/setting/member",
+				"icon": "icon-shenjing",
+				"prentID": 6
+			}
+		]
+	}
 ]

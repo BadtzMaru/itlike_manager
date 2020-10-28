@@ -1,12 +1,12 @@
-.admin-pane{
-    min-height: 100%;
+.admin-pane {
+	min-height: 100%;
 }
-.admin-content{
-    background-color: #fff;
-    margin: 24px 16px 0;
-    padding: 24px;
-    min-height: 500px;
+.admin-content {
+	background-color: #fff;
+	margin: 24px 16px 0;
+	padding: 24px;
+	min-height: 500px;
 }
-.admin-pane .admin-footer{
-    text-align: center;
+.admin-pane .admin-footer {
+	text-align: center;
 }
