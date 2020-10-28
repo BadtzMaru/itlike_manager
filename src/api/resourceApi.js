@@ -1,30 +1,110 @@
 import ajax from './index';
 
 /*
-*   1. 获取直播主题
+*   1. 获取分类
 * */
-export const getLiveTheme = () => ajax('/api/auth/live/live_theme');
+export const getResourceCategory = () => ajax('/api/auth/resource/r_category');
 /*
-*   2. 获取使用人群
+*   2. 获取所属班级
 * */
-export const getLivePerson = () => ajax('/api/auth/live/live_person');
+export const getResourceClasses = () => ajax('/api/auth/resource/r_classes');
 /*
-*   3. 添加直播课程
+*   3. 获取所属区域
 * */
-export const addLive = (token, live_title, live_author, live_img, live_begin_time, live_end_time, live_price, live_person_id, live_theme_id, is_focus, focus_img, live_url) => ajax('/api/auth/live/add',{token, live_title, live_author, live_img, live_begin_time, live_end_time, live_price, live_person_id, live_theme_id, is_focus, focus_img, live_url},'post');
+export const getResourceArea = () => ajax('/api/auth/resource/r_Area');
 /*
-*   4. 获取直播课程列表
+*   4. 获取所属格式
 * */
-export const getLive = (page_num,page_size) => ajax('/api/auth/live/list',{page_num,page_size});
+export const getResourceFormat = () => ajax('/api/auth/resource/r_format');
 /*
-*   5. 设置是否轮播图
+*   5. 获取所属材料
 * */
-export const setFocusLive = (id,is_focus) => ajax('/api/auth/live/set_focus_live',{id,is_focus});
+export const getResourceMate = () => ajax('/api/auth/resource/r_mate');
 /*
-*   6. 删除直播课程
+*   6. 添加资源
 * */
-export const deleteLive = (id) => ajax('/api/auth/live/delete_live',{id});
+export const addResource = (
+    token,
+    resource_name,
+    resource_author,
+    resource_publish_time,
+    resource_content,
+    resource_category_id,
+    resource_classes_id,
+    resource_area_id,
+    resource_mate_id,
+    resource_format_id,
+    resource_img,
+    resource_price,
+    is_focus,
+    focus_img,
+) => ajax('/api/auth/resource/add', {
+    token,
+    resource_name,
+    resource_author,
+    resource_publish_time,
+    resource_content,
+    resource_category_id,
+    resource_classes_id,
+    resource_area_id,
+    resource_mate_id,
+    resource_format_id,
+    resource_img,
+    resource_price,
+    is_focus,
+    focus_img,
+}, 'post');
 /*
-*   7. 修改一条直播课
+*   7. 获取资源列表
 * */
-export const editLive = (token, id, live_title, live_author, live_img, live_begin_time, live_end_time, live_price, live_person_id, live_theme_id, is_focus, focus_img, live_url) => ajax('/api/auth/live/edit',{token, id, live_title, live_author, live_img, live_begin_time, live_end_time, live_price, live_person_id, live_theme_id, is_focus, focus_img, live_url},'post');
+export const getResourceList = (page_num, page_size) => ajax('/api/auth/resource/list', {page_num, page_size});
+/*
+*   8. 是否设为轮播图
+* */
+export const setFocusResource = (id, is_focus) => ajax('/api/auth/resource/set_focus_resource', {id, is_focus});
+/*
+*   9. 删除资源
+* */
+export const deleteResource = (id) => ajax('/api/auth/resource/delete_resource', {id});
+/*
+*   10. 获取上传文件
+* */
+export const getFileList = (tag) => ajax('/api/auth/resource/file_list',{tag});
+/*
+*   11. 编辑资源
+* */
+export const editResource = (
+    token,
+    id,
+    tag,
+    resource_name,
+    resource_author,
+    resource_publish_time,
+    resource_content,
+    resource_category_id,
+    resource_classes_id,
+    resource_area_id,
+    resource_mate_id,
+    resource_format_id,
+    resource_img,
+    resource_price,
+    is_focus,
+    focus_img,
+) => ajax('/api/auth/resource/edit', {
+    token,
+    id,
+    tag,
+    resource_name,
+    resource_author,
+    resource_publish_time,
+    resource_content,
+    resource_category_id,
+    resource_classes_id,
+    resource_area_id,
+    resource_mate_id,
+    resource_format_id,
+    resource_img,
+    resource_price,
+    is_focus,
+    focus_img,
+}, 'post');

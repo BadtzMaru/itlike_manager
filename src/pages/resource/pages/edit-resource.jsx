@@ -6,12 +6,13 @@ import Moment from 'moment';
 import LikeUploadImg from "../../../components/LikeUploadImg";
 import config from "../../../config/config";
 import {
-    addResource,
     getResourceArea,
     getResourceCategory,
     getResourceClasses,
     getResourceFormat,
-    getResourceMate
+    getResourceMate,
+    getFileList,
+    editResource,
 } from "../../../api/resourceApi";
 import {getUser} from "../../../api/adminApi";
 
@@ -19,22 +20,49 @@ const {Item} = Form;
 const {Option} = Select;
 const {Dragger} = Upload;
 
-export default class AddResource extends React.Component {
+export default class EditResource extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             imageUrl: '',
             focusImgUrl: '',
+            resource_id: '',
+            tag: '',
             dragFileList: [],   // 存放上传文件,
             resource_category: [],
             resource_classes: [],
             resource_format: [],
             resource_mate: [],
             resource_area: [],
-        }
+        };
+        this.resourceFormRef = React.createRef();
     }
 
     componentDidMount() {
+        if (!this.props.location.state) {
+            this.setState = () => false;
+            this.props.history.goBack();
+        }
+        // 获取上一个界面的值
+        if (this.props.location.state) {
+            const resourceItem = this.props.location.state.resource;
+            if (resourceItem) {
+                const {resource_img, focus_img, id, resource_content} = resourceItem;
+                this.resourceFormRef.current.setFieldsValue(resourceItem);
+                this.setState({
+                    imageUrl: resource_img,
+                    focusImgUrl: focus_img,
+                    resource_id: id,
+                    tag: resource_content,
+                });
+                // 获取文件列表
+                getFileList(resourceItem.resource_content).then(result => {
+                    this.setState({dragFileList: result.data});
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+        }
         getResourceCategory().then(result => {
             if (result && result.status === 1) {
                 this.setState({
@@ -93,13 +121,15 @@ export default class AddResource extends React.Component {
             }
         };
         const onFinish = (values) => {
-            const {imageUrl, focusImgUrl, dragFileList} = this.state;
+            const {resource_id, imageUrl, focusImgUrl, dragFileList, tag} = this.state;
             let {resource_name, resource_author, resource_category_id, resource_classes_id, resource_area_id, resource_mate_id, resource_format_id, resource_price, is_focus} = values;
             if (!imageUrl) return message.warn('请上传活动封面');
             // 生成创建日期
             const resource_publish_time = Moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-            addResource(
+            editResource(
                 getUser().token,
+                resource_id,
+                tag,
                 resource_name,
                 resource_author,
                 resource_publish_time,
@@ -114,17 +144,18 @@ export default class AddResource extends React.Component {
                 is_focus ? 1 : 0,
                 focusImgUrl,
             ).then(result => {
+                console.log(result);
                 if (result?.status === 1) {
-                    message.success('添加资源成功');
+                    message.success('修改资源成功');
                     this.props.history.goBack();
                 }
             }).catch(() => {
-                message.error('添加资源失败');
+                message.error('修改资源失败');
             });
         };
         return (
-            <Card title={"新增幼教资源"}>
-                <Form {...formItemLayout} onFinish={onFinish}>
+            <Card title={"编辑幼教资源"}>
+                <Form {...formItemLayout} onFinish={onFinish} ref={this.resourceFormRef}>
                     <Item label={"资源名称"} name={"resource_name"} rules={[{required: true, message: '请输入资源名称'}]}>
                         <Input/>
                     </Item>
@@ -193,6 +224,7 @@ export default class AddResource extends React.Component {
                             name={"resource_file"}
                             multiple={true}
                             action={"/api/auth/resource/upload_many_file"}
+                            fileList={this.state.dragFileList}
                             onChange={info => {
                                 const {status} = info.file;
                                 if (status !== 'uploading') {
@@ -212,7 +244,7 @@ export default class AddResource extends React.Component {
                             onRemove={(info) => {
                                 let dragFileList = this.state.dragFileList;
                                 dragFileList = dragFileList.filter(item => {
-                                    return item.uid !== info.response.data.uid;
+                                    return item.uid !== info.uid;
                                 });
                                 this.setState({dragFileList});
                             }}
@@ -224,7 +256,7 @@ export default class AddResource extends React.Component {
                     </Item>
                     <Item wrapperCol={{span: 20}}>
                         <div style={{textAlign: 'center', marginTop: 30}}>
-                            <Button type={"primary"} htmlType={"submit"}>保存</Button>
+                            <Button type={"primary"} htmlType={"submit"}>修改</Button>
                             <Divider type={"vertical"}/>
                             <Button onClick={() => this.props.history.goBack()}>取消</Button>
                         </div>

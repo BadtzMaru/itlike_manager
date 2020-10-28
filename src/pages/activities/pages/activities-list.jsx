@@ -1,48 +1,65 @@
 import React from "react";
-import {Card, Button, Table, Switch, Divider, Modal} from 'antd';
+import { Card, Button, Table, Switch, Divider, Modal, message, notification } from 'antd';
+import { deleteActivities, getActivitiesList, setFocusActivities } from "../../../api/activitiesApi";
+import config from "../../../config/config";
 
-export default class LifeList extends React.Component {
+export default class ActivitiesList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            resourceList: [
-                {
-                    id: 1,
-                    job_name: '新闻一',
-                    job_img: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1599719490298&di=857c67691d86eae71deb9bed8343f561&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fforum%2Fw%3D580%2Fsign%3Da9714efaaf86c91708035231f93c70c6%2Fddd3ab59d109b3dea0394e6ac4bf6c81810a4c48.jpg',
-                    job_author: '张三',
-                    is_focus: 0,
-                },
-                {
-                    id: 2,
-                    job_name: '新闻二',
-                    job_img: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1599719490298&di=857c67691d86eae71deb9bed8343f561&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fforum%2Fw%3D580%2Fsign%3Da9714efaaf86c91708035231f93c70c6%2Fddd3ab59d109b3dea0394e6ac4bf6c81810a4c48.jpg',
-                    job_author: '李四',
-                    is_focus: 1,
-                },
-            ],
-            totalSize: 100,
+            activitiesList: [],
+            totalSize: 0,
             pageSize: 4,
         }
     }
 
+    componentDidMount() {
+        this._loadData();
+    }
+
+    _loadData = (page_num = 1, page_size = 4) => {
+        getActivitiesList(page_num, page_size).then(result => {
+            if (result && result.status === 1) {
+                message.success(result.msg);
+                this.setState({
+                    activitiesList: result.data.activities_list,
+                    totalSize: result.data.activities_count,
+                })
+            }
+        }).catch(() => {
+            message.error('获取活动列表失败');
+        });
+    };
+
     // 列的配置信息
     columns = [
-        {title: 'ID', dataIndex: 'id', width: 50, align: 'center'},
-        {title: '幼教标题', dataIndex: 'job_name', align: 'center'},
+        { title: 'ID', dataIndex: 'id', width: 50, align: 'center' },
+        { title: '活动名称', dataIndex: 'activities_name', align: 'center' },
+        { title: '开始时间', dataIndex: 'activities_time', align: 'center' },
         {
-            title: '人生封面', dataIndex: 'job_img', render: (text) => {
+            title: '活动封面', dataIndex: 'activities_img', render: (text) => {
                 return (
-                    <img src={text} alt="人生封面" style={{width: 100}}/>
+                    <img src={config.BASE_URL + text} alt="活动封面" style={{ width: 100 }} />
                 );
             }, align: 'center'
         },
-        {title: '所属作者', dataIndex: 'job_author', align: 'center'},
-
+        { title: '活动价格', dataIndex: 'activities_price', align: 'center' },
+        { title: '活动天数', dataIndex: 'activities_bus_day_id', align: 'center' },
         {
-            title: '首页焦点', dataIndex: 'is_focus', render: (text) => {
+            title: '首页焦点', dataIndex: 'is_focus', render: (text, record) => {
                 return (
-                    <Switch checkedChildren={"是"} unCheckedChildren={"否"} defaultChecked={text === 1}/>
+                    <Switch checkedChildren={"是"} unCheckedChildren={"否"} defaultChecked={text === 1}
+                        disabled={!record.focus_img} onChange={checked => {
+                            setFocusActivities(record.id, checked ? 1 : 0).then(result => {
+                                if (result && result.status === 1) {
+                                    notification["success"]({
+                                        message: `活动: ${record.activities_name}`,
+                                        description: `${checked ? '设置为' : '取消'}首页活动焦点`,
+                                    });
+                                    record.is_focus = checked ? 1 : 0;
+                                }
+                            });
+                        }} />
                 );
             }, align: 'center'
         },
@@ -50,8 +67,15 @@ export default class LifeList extends React.Component {
             title: '操作', align: 'center', render: (text, record) => {
                 return (
                     <div>
-                        <Button>编辑</Button>
-                        <Divider type="vertical"/>
+                        <Button onClick={() => {
+                            this.props.history.push({
+                                pathname: '/activities/edit-activities',
+                                state: {
+                                    activities: record,
+                                },
+                            });
+                        }}>编辑</Button>
+                        <Divider type="vertical" />
                         <Button onClick={() => {
                             Modal.confirm({
                                 title: '确认删除吗',
@@ -59,7 +83,16 @@ export default class LifeList extends React.Component {
                                 okText: '确认',
                                 cancelText: '取消',
                                 onOk: () => {
-
+                                    deleteActivities(record.id).then(result => {
+                                        if (result && result.status === 1) {
+                                            message.success(result.msg);
+                                            this._loadData(this.state.pageNum, this.state.pageSize);
+                                        } else {
+                                            message.error('删除失败');
+                                        }
+                                    }).catch(() => {
+                                        message.error('删除失败');
+                                    });
                                 }
                             });
                         }}>删除</Button>
@@ -73,20 +106,19 @@ export default class LifeList extends React.Component {
         // 添加按钮
         let AddBtn = (
             <Button type={"primary"} onClick={() => {
-                this.props.history.push('/lifejob/add-life');
-            }}>添加人生资源</Button>
+                this.props.history.push('/activities/add-activities');
+            }}>添加活动</Button>
         );
         return (
             <div>
-                <Card title={"职场人生列表"} extra={AddBtn}>
-                    <Table rowKey={'id'} columns={this.columns} dataSource={this.state.resourceList} pagination={{
+                <Card title={"活动列表"} extra={AddBtn}>
+                    <Table rowKey={'id'} columns={this.columns} dataSource={this.state.activitiesList} pagination={{
                         total: this.state.totalSize,
                         pageSize: this.state.pageSize,
-                        onChange: (pageNum,pageSize)=>{
-                            console.log(pageNum,pageSize);
+                        onChange: (pageNum, pageSize) => {
+                            this._loadData(pageNum);
                         }
                     }}>
-
                     </Table>
                 </Card>
             </div>

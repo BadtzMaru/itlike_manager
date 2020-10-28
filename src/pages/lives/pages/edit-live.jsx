@@ -4,7 +4,7 @@ import Moment from "moment";
 
 import LikeUploadImg from "../../../components/LikeUploadImg";
 import config from "../../../config/config";
-import {addLive, getLivePerson, getLiveTheme} from '../../../api/liveApi';
+import {editLive, getLivePerson, getLiveTheme} from '../../../api/liveApi';
 import {getUser} from "../../../api/adminApi";
 
 const {Item} = Form;
@@ -12,7 +12,7 @@ const {Option} = Select;
 const {RangePicker} = DatePicker;
 
 
-export default class AddLive extends React.Component {
+export default class EditLive extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,10 +20,34 @@ export default class AddLive extends React.Component {
             focusImgUrl: '',
             live_theme: [],
             live_person: [],
-        }
+            live_id: '',
+        };
+        // ref绑定表单
+        this.liveFormRef = React.createRef();
     }
 
     componentDidMount() {
+        if (this.props.location.state) {
+            const liveItem = this.props.location.state.live;
+            const {id, live_title, live_author, live_begin_time, live_end_time, live_url, live_price, live_person_id, live_theme_id, is_focus, live_img, focus_img} = liveItem;
+            if (liveItem) {
+                this.liveFormRef.current.setFieldsValue({
+                    live_title,
+                    live_author,
+                    live_time: [Moment(live_begin_time), Moment(live_end_time)],
+                    live_url,
+                    live_price,
+                    live_person_id,
+                    live_theme_id,
+                    is_focus: is_focus === 1,
+                });
+            }
+            this.setState({
+                imageUrl: live_img,
+                focusImgUrl: focus_img,
+                live_id: id
+            });
+        }
         getLivePerson().then(result => {
             if (result && result.status === 1) {
                 this.setState({
@@ -52,27 +76,26 @@ export default class AddLive extends React.Component {
         }
 
         const onFinish = (values) => {
-            console.log(values);
-            const {imageUrl, focusImgUrl} = this.state;
+            const {imageUrl, focusImgUrl, live_id} = this.state;
             const {live_title, live_author, live_price, live_person_id, live_theme_id, is_focus, live_url} = values;
             if (!imageUrl) return message.warning('请上传直播封面');
             // 开始时间和结束时间
             const live_begin_time = Moment(values.live_time[0]).format('YYYY-MM-DD HH:mm:ss');
             const live_end_time = Moment(values.live_time[1]).format('YYYY-MM-DD HH:mm:ss');
             // 调用接口
-            addLive(getUser().token, live_title, live_author, imageUrl, live_begin_time, live_end_time, live_price, live_person_id, live_theme_id, is_focus ? 1 : 0, focusImgUrl, live_url).then(result=>{
+            editLive(getUser().token, live_id, live_title, live_author, imageUrl, live_begin_time, live_end_time, live_price, live_person_id, live_theme_id, is_focus ? 1 : 0, focusImgUrl, live_url).then(result => {
                 if (result && result.status === 1) {
                     message.success(result.msg);
                     this.props.history.goBack();
                 }
-            }).catch(()=>{
-                message.error('添加直播课失败');
+            }).catch(() => {
+                message.error('编辑直播课失败');
             })
 
         }
         return (
-            <Card title={"新增直播"}>
-                <Form {...formItemLayout} onFinish={onFinish}>
+            <Card title={"编辑直播课"}>
+                <Form {...formItemLayout} onFinish={onFinish} ref={this.liveFormRef}>
                     <Item label={"直播名称"} name={"live_title"} rules={[{required: true, message: '请输入直播名称'}]}>
                         <Input/>
                     </Item>
@@ -80,7 +103,7 @@ export default class AddLive extends React.Component {
                         <Input/>
                     </Item>
                     <Item label={"直播价格"} name={"live_price"} rules={[{required: true, message: '请输入直播价格'}]}>
-                        <Input/>
+                        <Input type={"number"}/>
                     </Item>
                     <Item label={"直播时间"} name={"live_time"} rules={[{required: true, message: '请选择直播时间'}]}>
                         <RangePicker showTime/>
@@ -131,7 +154,7 @@ export default class AddLive extends React.Component {
                     </Item>
                     <Item wrapperCol={{span: 20}}>
                         <div style={{textAlign: 'center', marginTop: 30}}>
-                            <Button type={"primary"} htmlType="submit">保存</Button>
+                            <Button type={"primary"} htmlType="submit">修改</Button>
                             <Divider type={"vertical"}/>
                             <Button onClick={() => this.props.history.goBack()}>取消</Button>
                         </div>

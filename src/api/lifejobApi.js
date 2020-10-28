@@ -1,34 +1,76 @@
 import ajax from './index';
 
 /*
-*   1. 获取地址
+*   1. 获取学前所属分类
 * */
-export const getActivitiesAddress = () => ajax('/api/auth/activities/activities_address');
+export const getJobPre = () => ajax('/api/auth/lifejob/job_pre');
 /*
-*   2. 获取招收对象
+*   2. 获取所属家园
 * */
-export const getActivitiesObject = () => ajax('/api/auth/activities/activities_object');
+export const getJobFamily = () => ajax('/api/auth/lifejob/job_family');
 /*
-*   2. 获取营期
+*   3. 添加职场人生
 * */
-export const getActivitiesBus = () => ajax('/api/auth/activities/activities_bus');
+export const addJob = (
+    token,
+    job_name,
+    job_img,
+    job_author,
+    job_time,
+    job_content,
+    job_pre_edu_id,
+    job_family_edu_id,
+    is_focus,
+    focus_img,
+) => ajax('/api/auth/lifejob/add', {
+    token,
+    job_name,
+    job_img,
+    job_author,
+    job_time,
+    job_content,
+    job_pre_edu_id,
+    job_family_edu_id,
+    is_focus,
+    focus_img,
+}, 'post');
 /*
-*   3. 添加活动
+*   4. 获取人生列表
 * */
-export const addActivities = (token, activities_name, activities_time, activities_img, activities_price, activities_tag, activities_count, activities_address_id, activities_object_id, activities_bus_day_id, activities_intro, activities_trip, activities_day, activities_notice, is_focus, focus_img) => ajax('/api/auth/activities/add',{token, activities_name, activities_time, activities_img, activities_price, activities_tag, activities_count, activities_address_id, activities_object_id, activities_bus_day_id, activities_intro, activities_trip, activities_day, activities_notice, is_focus, focus_img},'post');
-/*
-*   4. 获取活动列表
-* */
-export const getActivitiesList = (page_num,page_size) => ajax('/api/auth/activities/list',{page_num,page_size});
+export const getJobList = (page_num, page_size) => ajax('/api/auth/lifejob/list', {page_num, page_size});
 /*
 *   5. 设置是否轮播图
 * */
-export const setFocusActivities = (id,is_focus) => ajax('/api/auth/activities/set_focus_activities',{id,is_focus});
+export const setFocusJob = (id, is_focus) => ajax('/api/auth/lifejob/set_focus_job', {id, is_focus});
 /*
 *   6. 删除直播课程
 * */
-export const deleteActivities = (id) => ajax('/api/auth/activities/delete_activities',{id});
+export const deleteJob = (id) => ajax('/api/auth/lifejob/delete_job', {id});
 /*
-*   7. 修改一条直播课
+*   7. 修改职场人生
 * */
-export const editActivities = (token, id, activities_name, activities_time, activities_img, activities_price, activities_tag, activities_count, activities_address_id, activities_object_id, activities_bus_day_id, activities_intro, activities_trip, activities_day, activities_notice, is_focus, focus_img) => ajax('/api/auth/activities/edit',{token, id, activities_name, activities_time, activities_img, activities_price, activities_tag, activities_count, activities_address_id, activities_object_id, activities_bus_day_id, activities_intro, activities_trip, activities_day, activities_notice, is_focus, focus_img},'post');
+export const editJob = (
+    token,
+    id,
+    job_name,
+    job_img,
+    job_author,
+    job_time,
+    job_content,
+    job_pre_edu_id,
+    job_family_edu_id,
+    is_focus,
+    focus_img
+) => ajax('/api/auth/lifejob/edit', {
+    token,
+    id,
+    job_name,
+    job_img,
+    job_author,
+    job_time,
+    job_content,
+    job_pre_edu_id,
+    job_family_edu_id,
+    is_focus,
+    focus_img
+}, 'post');

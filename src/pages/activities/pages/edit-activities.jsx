@@ -10,7 +10,7 @@ import {
     getActivitiesAddress,
     getActivitiesObject,
     getActivitiesBus,
-    addActivities
+    editActivities,
 } from '../../../api/activitiesApi';
 import {getUser} from "../../../api/adminApi";
 
@@ -21,20 +21,53 @@ export default class AddActivities extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: '',
             imageUrl: '',
             focusImgUrl: '',
             activities_address: [],
             activities_object: [],
             activities_bus: [],
             tags: [],
+            activities_intro: '',
+            activities_trip: '',
+            activities_day: '',
+            activities_notice: '',
+
         };
         this.activities_intro_ref = React.createRef();
         this.activities_trip_ref = React.createRef();
         this.activities_days_ref = React.createRef();
         this.activities_notice_ref = React.createRef();
+        this.activities_form_ref = React.createRef();
     }
 
     componentDidMount() {
+        // 1. 获取上一个界面的数据
+        if (this.props.location.state) {
+            const activitiesItem = this.props.location.state.activities;
+            if (activitiesItem) {
+                console.log(activitiesItem);
+                activitiesItem.activities_time = Moment(activitiesItem.activities_time);
+                this.activities_form_ref.current.setFieldsValue(activitiesItem);
+                // 1.1 处理活动标签
+                if (activitiesItem.activities_tag) {
+                    this.setState({tags: activitiesItem.activities_tag.split(',')})
+                }
+                // 1.2 处理其他的
+                this.setState({
+                    id: activitiesItem.id,
+                    imageUrl: activitiesItem.activities_img,
+                    focusImgUrl: activitiesItem.focus_img,
+                    activities_intro: activitiesItem.activities_intro,
+                    activities_trip: activitiesItem.activities_trip,
+                    activities_day: activitiesItem.activities_day,
+                    activities_notice: activitiesItem.activities_notice,
+                });
+            }
+        } else {
+            // this.state = () => false;
+            return this.props.history.goBack();
+        }
         getActivitiesBus().then(result => {
             if (result && result.status === 1) {
                 this.setState({
@@ -64,7 +97,14 @@ export default class AddActivities extends React.Component {
         });
     }
 
+    componentWillUnmount() {
+        this.setState = (state, callback) => {
+            return false;
+        }
+    }
+
     render() {
+        const {id, imageUrl, focusImgUrl, activities_address, activities_object, activities_bus, tags} = this.state;
         const formItemLayout = {
             labelCol: {
                 xs: {span: 4},
@@ -73,7 +113,6 @@ export default class AddActivities extends React.Component {
                 xs: {span: 12},
             }
         };
-        const {imageUrl, focusImgUrl, activities_address, activities_object, activities_bus} = this.state;
         const onFinish = (values) => {
             console.log(values);
             const {imageUrl, focusImgUrl, tags} = this.state;
@@ -88,19 +127,19 @@ export default class AddActivities extends React.Component {
             let activities_notice = this.activities_notice_ref.current.getContent();
             console.log(activities_intro);
             // 调用添加活动API
-            addActivities(getUser().token, activities_name, activities_time, imageUrl, activities_price, tagStr, activities_count, activities_address_id, activities_object_id, activities_bus_day_id, activities_intro, activities_trip, activities_day, activities_notice, is_focus ? 1 : 0, focusImgUrl).then(result=>{
+            editActivities(getUser().token, id, activities_name, activities_time, imageUrl, activities_price, tagStr, activities_count, activities_address_id, activities_object_id, activities_bus_day_id, activities_intro, activities_trip, activities_day, activities_notice, is_focus ? 1 : 0, focusImgUrl).then(result => {
                 console.log(result);
                 if (result?.status === 1) {
-                    message.success('添加活动成功');
+                    message.success('修改活动成功');
                     this.props.history.goBack();
                 }
-            }).catch(()=>{
-                message.error('添加活动失败');
-            })
+            }).catch(() => {
+                message.error('修改活动失败');
+            });
         };
         return (
             <Card title={"新增活动"}>
-                <Form {...formItemLayout} onFinish={onFinish}>
+                <Form {...formItemLayout} onFinish={onFinish} ref={this.activities_form_ref}>
                     <Item label={"活动名称"} name={"activities_name"} rules={[{required: true, message: '请输入活动名称'}]}>
                         <Input/>
                     </Item>
@@ -135,7 +174,7 @@ export default class AddActivities extends React.Component {
                         </Select>
                     </Item>
                     <Item label={"活动标签"}>
-                        <LikeTag tagsCallBack={(tags) => {
+                        <LikeTag tagsArr={tags} tagsCallBack={(tags) => {
                             this.setState({tags});
                         }}/>
                     </Item>
@@ -161,20 +200,28 @@ export default class AddActivities extends React.Component {
                         <Switch checkedChildren="是" unCheckedChildren="否" disabled={!focusImgUrl}/>
                     </Item>
                     <Item label={"活动介绍"} name={"activities_intro"} wrapperCol={{span: 20}}>
-                        <RichTextEditor ref={this.activities_intro_ref} upLoadAction={"/api/auth/activities/upload_activities"} uploadName={"activities_img"}/>
+                        <RichTextEditor ref={this.activities_intro_ref}
+                                        upLoadAction={"/api/auth/activities/upload_activities"}
+                                        uploadName={"activities_img"} htmlContent={this.state.activities_intro}/>
                     </Item>
                     <Item label={"行程安排"} name={"activities_trip"} wrapperCol={{span: 20}}>
-                        <RichTextEditor ref={this.activities_trip_ref} upLoadAction={"/api/auth/activities/upload_activities"} uploadName={"activities_img"}/>
+                        <RichTextEditor ref={this.activities_trip_ref}
+                                        upLoadAction={"/api/auth/activities/upload_activities"}
+                                        uploadName={"activities_img"} htmlContent={this.state.activities_trip}/>
                     </Item>
                     <Item label={"开营日期"} name={"activities_days"} wrapperCol={{span: 20}}>
-                        <RichTextEditor ref={this.activities_days_ref} upLoadAction={"/api/auth/activities/upload_activities"} uploadName={"activities_img"}/>
+                        <RichTextEditor ref={this.activities_days_ref}
+                                        upLoadAction={"/api/auth/activities/upload_activities"}
+                                        uploadName={"activities_img"} htmlContent={this.state.activities_day}/>
                     </Item>
                     <Item label={"注意事项"} name={"activities_notice"} wrapperCol={{span: 20}}>
-                        <RichTextEditor ref={this.activities_notice_ref} upLoadAction={"/api/auth/activities/upload_activities"} uploadName={"activities_img"}/>
+                        <RichTextEditor ref={this.activities_notice_ref}
+                                        upLoadAction={"/api/auth/activities/upload_activities"}
+                                        uploadName={"activities_img"} htmlContent={this.state.activities_notice}/>
                     </Item>
                     <Item wrapperCol={{span: 20}}>
                         <div style={{textAlign: 'center', marginTop: 30}}>
-                            <Button type={"primary"} htmlType={"submit"}>保存</Button>
+                            <Button type={"primary"} htmlType={"submit"}>修改</Button>
                             <Divider type={"vertical"}/>
                             <Button onClick={() => this.props.history.goBack()}>取消</Button>
                         </div>

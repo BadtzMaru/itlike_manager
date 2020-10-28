@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {removeUser} from "./adminApi";
+import PubSub from 'pubsub-js';
 
 // 环境的切换
 /*const runVersion = process.env.NODE_ENV;
@@ -33,7 +35,18 @@ axios.interceptors.response.use((response) => {
     }
 }, (error) => {
     console.log(error);
-})
+});
+
+/* 生成随机长度的随机数 */
+function randomCode(length) {
+    let chars = ['0','1','2','3','4','5','6','7','8','9'];
+    let result = '';
+    for (let i=0;i<length;i++) {
+        let index = Math.floor(Math.random()*9);
+        result += chars[index];
+    }
+    return result;
+}
 
 export default function ajax(url = '', params = {}, method = 'get') {
     // 0. 定义变量
@@ -43,13 +56,23 @@ export default function ajax(url = '', params = {}, method = 'get') {
         method = method.toUpperCase();
         // 1.1 判断请求的类型
         if (method === 'GET') {
+            // 添加随机数,去除缓存
+            params['itlike'] = randomCode(5);
             promise = axios({url, params});
         } else if (method === 'POST') {
             promise = axios({method, url, data: params});
         }
         // 1.2 处理结果并返回
         promise.then(response => {
-            resolve(response);
+            // 处理token是否失效
+            if (response.status === 2) {
+                // 清空本地管理员信息
+                removeUser();
+                // 发布token失效信息
+                PubSub.publish('tokenOut',{});
+            } else {
+                resolve(response);
+            }
         }).catch(error => {
             reject(error);
         });
